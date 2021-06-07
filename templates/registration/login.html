@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+{% endblock %}
+
+{% block title %}
+    Login Page
+{% endblock %}
+
+
+
+{% block body %}
+    <div class="container h-100 d-flex justify-content-center">
+    <div class="jumbotron my-auto">
+        <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Login</button>
+        </form>
+    </div>
+    </div>
+{% endblock %}

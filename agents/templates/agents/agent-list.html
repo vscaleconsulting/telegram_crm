@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% comment %} {% block css %}
+    <link rel="stylesheet" href="{% static 'leads/lead-list.css' %}">
+{% endblock %} {% endcomment %}
+
+{% block title %}
+    Login Page
+{% endblock %}
+
+
+{% block body %}
+    {% if request.user.is_authenticated %}
+        <div class='container h-100 d-flex justify-content-center mt-3'>
+            <h1>This is the Agent list</h1>
+        </div>
+        
+        <div class='container h-100 d-flex justify-content-center mt-3'>
+            <h2>Current User : {{ request.user.username }}</h2>
+        </div>
+        
+        
+        {% comment %} <div class='ml-3'>
+            <a href="{% url 'repopulate-list' %}" class="btn-md btn-primary btn active" role="button" aria-pressed="true">Repopulate</a>
+        </div> {% endcomment %}
+        
+
+                
+        <div class='text-right mr-3'>
+            <a href="{% url 'home-page' %}" class="btn-md btn-primary btn active" role="button" aria-pressed="true">Home page</a>
+        </div>
+        
+        <h3 class='text-center mb-3'>Agents</h3>
+
+        <div class='container h-100 d-flex justify-content-center'>
+            <table class="table table-sm table-striped table-bordered">
+            <thead class="thead">
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agent in agents %}
+                    <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ agent.user.username }}</td>
+                    <td>{{ agent.user.email }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        
+    {% else %}
+        <div class="container h-100 d-flex justify-content-center">
+            <div class="jumbotron my-auto">
+                <div class="container text-center">
+                    <h1>You are not logged in.</h1>
+                    <a href='{% url 'login-page' %}'>Login</a>
+                </div>
+                
+            </div>
+        </div>
+    {% endif %}
+
+    
+{% endblock %}
+       
