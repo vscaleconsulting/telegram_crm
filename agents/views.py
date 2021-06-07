@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, authenticate
 from leads.models import Agent
 from .forms import AgentModelForm
+from leads.functions import get_session
 
 # Create your views here.
 
@@ -27,7 +28,8 @@ class AgentCreateView(generic.CreateView):
 
         # user.save()
         Agent.objects.create(
-            user=user
+            user=user,
+            session=get_session()
         )
         # user = authenticate(username=user.username, password=user.password)
         login(self.request, user)

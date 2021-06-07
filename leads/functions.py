@@ -10,6 +10,13 @@ from .models import TGSession, TGBot, Lead, MessageCampaign, Agent
 from django.utils import timezone
 
 
+def get_session():
+    session = TGSession.objects.order_by('last_used_on', 'usage_count').first()
+    session.last_used_on = timezone.now()
+    session.save()
+    return session
+
+
 def get_session_str():
     return TGSession.objects.order_by('last_used_on', 'usage_count').first().session_str
 
@@ -44,12 +51,11 @@ def update_usage_bot_token(bot_token):
 def add_all_users(group):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    client = TelegramClient(StringSession(
-        '1ApWapzMBuyhm1ynxKkQ4qL58doxHa27-g-aeN80l6kxSLbsPtaD5me6vNwXEXL5oZGBSVBSDap5R0ART95CtPnmVI55mmQGvC9FFyBe4K4YgrFdRLOOmIWRSz3vBXXTgh8XevtEti1COGlTeP600EL257_ni8Ikh7Ns20DoPYchm9rd61zk6HmLwAzHCQ7t0FiyrDPp3TCCkp6lA-VUYZpZ2fORpy_FlR4szTFVfd-XTcROZYtsm_UetS77alp0dQbWHzjTbb1xW0hBPIpE6kPZVHtr9yHK5MDrB2IfCtxw_fhQRAJWEaO3C9ZPRd1KoXjXQJq-9XB2gUzamQ04ddHXtI4fm1z8='),
-        api_id, api_hash, loop=loop)
-    # client = TelegramClient(StringSession(get_session_str()), api_id, api_hash, loop=loop)
+    # client = TelegramClient(StringSession(
+    #     '1ApWapzMBuyhm1ynxKkQ4qL58doxHa27-g-aeN80l6kxSLbsPtaD5me6vNwXEXL5oZGBSVBSDap5R0ART95CtPnmVI55mmQGvC9FFyBe4K4YgrFdRLOOmIWRSz3vBXXTgh8XevtEti1COGlTeP600EL257_ni8Ikh7Ns20DoPYchm9rd61zk6HmLwAzHCQ7t0FiyrDPp3TCCkp6lA-VUYZpZ2fORpy_FlR4szTFVfd-XTcROZYtsm_UetS77alp0dQbWHzjTbb1xW0hBPIpE6kPZVHtr9yHK5MDrB2IfCtxw_fhQRAJWEaO3C9ZPRd1KoXjXQJq-9XB2gUzamQ04ddHXtI4fm1z8='),
+    #     api_id, api_hash, loop=loop)
+    client = TelegramClient(StringSession(get_session_str()), api_id, api_hash, loop=loop)
     client.connect()
-
     # print(StringSession.save(client.session))
     users = client.get_participants(group)
     admins = client.get_participants(group, filter=ChannelParticipantsAdmins)
@@ -125,6 +131,7 @@ def get_leads_to_msg(agent_id, target_grp=None, entries=10):
 def mark_contacted(id):
     entry = MessageCampaign.objects.get(id=id)
     entry.contacted = True
+    entry.session_used = entry.agent.session
     entry.save()
 
 

@@ -9,7 +9,8 @@ class User(AbstractUser):
 
 class Agent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+    session = models.ForeignKey('TGSession', on_delete=models.SET_NULL, null=True, default=None, blank=True)
+
     def __str__(self):
         return self.user.username
 
@@ -67,6 +68,10 @@ class TGSession(models.Model):
     usage_count = models.IntegerField(default=0)
     last_used_on = models.DateField(default=timezone.now)
 
+    
+    def __str__(self):
+        return self.phone_num
+
     class Meta:
         verbose_name_plural = 'TGSessions'
     
@@ -76,7 +81,6 @@ class TGBot(models.Model):
     bot_token = models.TextField(primary_key=True)
     usage_count = models.IntegerField(default=0)
     last_used_on = models.DateField(default=timezone.now)
-    
     
     class Meta:
         verbose_name_plural = 'TGBots'
