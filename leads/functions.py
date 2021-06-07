@@ -61,10 +61,10 @@ def add_all_users(group):
     admins = client.get_participants(group, filter=ChannelParticipantsAdmins)
     client.disconnect()
 
-    db_leads_list = Lead.objects.filter(grp_username=group).all()
+    db_leads_list = [u.username for u in Lead.objects.filter(grp_username=group).all()]
     leads = []
     for user in users:
-        if user in db_leads_list or user.bot or user.status is None or user.username is None:
+        if user.username in db_leads_list or user.bot or user.status is None or user.username is None:
             continue
         leads.append(Lead(username=user.username,
                           first_name=user.first_name,
@@ -78,18 +78,24 @@ def add_all_users(group):
 
     i = 1
     for admin in admins:
-        if not admin.bot and admin.username is not None:
-            req_admin = Lead.objects.filter(
-                username=admin.username, grp_username=group).first()
-            req_admin.admin = i
-            req_admin.save()
-            i += 1
+        if admin.bot or admin.status is None or admin.username is None:
+            continue
+        req_admin = Lead.objects.filter(
+            username=admin.username, grp_username=group).first()
+        if req_admin is None:
+            continue
+        req_admin.admin = i
+        req_admin.save()
+        i += 1
 
     return len(users)
 
 
-def generate_message_campaign(target_grp):
-    leads = Lead.objects.all()
+def generate_message_campaign(target_grp, source_grp=None):
+    if source_grp is None:
+        leads = Lead.objects.all()
+    else:
+        leads = Lead.objects.filter(grp_username=source_grp).all()
     campaign = []
     for lead in leads:
         campaign.append(MessageCampaign(lead=lead, target_grp=target_grp))

@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import LandingPageView
+from .views import LandingPageView, add_leads
 
 urlpatterns = [
     path('', LandingPageView.as_view(), name='home-page'),
     path('admin/', admin.site.urls),
+    path('add-leads/', add_leads, name='add-leads'),
     path('leads/', include('leads.urls')),
     path('agents/', include('agents.urls')),
     path('login/', LoginView.as_view(), name='login-page'),

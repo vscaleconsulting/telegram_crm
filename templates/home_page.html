@@ -36,6 +36,7 @@
             {% if request.user.is_staff %}
                 <a href="{% url 'agent-list' %}">Agents</a>
                 <a href="/admin"> Admin</a>
+                <a href="{% url 'add-leads' %}">Add Leads</a>
             {% endif %}
 
         </div>

@@ -17,16 +17,16 @@ class Agent(models.Model):
 
 class Lead(models.Model):
 
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20, null=True, blank=True)
-    username = models.CharField(max_length=20, primary_key=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    username = models.CharField(max_length=255, primary_key=True)
     # agent = models.ForeignKey('Agent', on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20)
     grp_username = models.CharField(max_length=255)
     admin = models.IntegerField(default=0)
 
     # class Meta:
-    #     unique_together=(('agent', 'target_grp'),)
+        # unique_together=(('username', 'grp_username'),)
     
     def __str__(self):
         return f'{self.username}'

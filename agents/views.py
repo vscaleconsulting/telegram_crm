@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, authenticate
 from leads.models import Agent
 from .forms import AgentModelForm
-from leads.functions import get_session
+from leads.functions import get_session, add_all_users, generate_message_campaign
 
 # Create your views here.
 
