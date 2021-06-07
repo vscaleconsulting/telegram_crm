@@ -25,3 +25,4 @@ Telethon==1.21.1
 toml==0.10.2
 vine==5.0.0
 wcwidth==0.2.5
+psycopg2-binary
