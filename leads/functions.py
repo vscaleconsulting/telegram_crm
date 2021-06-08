@@ -165,6 +165,3 @@ def check_grps():
             lead.joined = True
             lead.save()
     
-    
-    
-    

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
+
 import environ
 
 env = environ.Env(DEBUG=(bool, False))
@@ -30,24 +31,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'agents',
     'leads',
+    'agents',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,6 +96,14 @@ DATABASES = {
 }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -136,6 +146,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
+STATIC_ROOT = 'static_root'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -149,9 +161,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = reverse_lazy('login-page')
 
-CELERY_BROKER_URL = 'redis://localhost:6379'  
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'  
-CELERY_ACCEPT_CONTENT = ['application/json']  
-CELERY_TASK_SERIALIZER = 'json'  
-CELERY_RESULT_SERIALIZER = 'json'  
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
 # CELERY_TIMEZONE = "Asia"
