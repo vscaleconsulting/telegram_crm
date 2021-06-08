@@ -10,8 +10,13 @@ from .models import TGSession, TGBot, Lead, MessageCampaign, Agent
 from django.utils import timezone
 
 
-def get_session():
-    session = TGSession.objects.order_by('last_used_on', 'usage_count').first()
+
+def get_session(random=False):
+    sessions = TGSession.objects.order_by('last_used_on', 'usage_count')
+    if random:
+        session = sessions[randint(1, (len(sessions)-1) // 2)]
+    else:
+        session = sessions.first()
     session.last_used_on = timezone.now()
     session.save()
     return session
@@ -26,39 +31,46 @@ def get_bot_token():
 
 
 def add_session_str(phone_num, session_str):
-    TGSession.objects.create(
-        phone_num='+' + phone_num.replace(' ', '').lstrip('+'), session_str=session_str)
+    try:
+        TGSession.objects.create(
+            phone_num='+' + phone_num.replace(' ', '').lstrip('+'), session_str=session_str)
+    except Exception:
+        pass
 
-def assign_new_session(agent_id):
-    agent = Agent.objects.get(user_id = agent_id)
-    agent.session = get_session()
+def assign_new_session(user):
+    agent = Agent.objects.get(user=user)
+    session = get_session()
+    if session == agent.session:
+        session = get_session(True)
+    agent.session = session
     agent.save()
 
-def get_otp(agent_id):
-    agent = Agent.objects.get(user_id = agent_id)
+def get_otp(user):
+    agent = Agent.objects.get(user=user)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     client = TelegramClient(StringSession(agent.session.session_str), api_id, api_hash, loop=loop)
     client.connect()
-    messages = client.get_messages('777000', 1)
+    messages = client.get_messages(777000, 1)
+    client.disconnect()
     if messages:
-        return re.findall('[0-9]+', messages[0])[0]
+        return re.findall('[0-9]+', messages[0].message)[0]
     return 'Retry'
 
 
-def check(ph_dict, ret):
-    """Helper function for update_active_numbers function
-    Args:
-        ph_dict (dict): dict {<phone>: <session str>}
-        ret (bool): True if phone number is active else False
-    """
-    for ph, sid in ph_dict.items():
-        try:
-            tg_client = TGClient(StringSession(sid), api_id=api_id, api_hash=api_hash)
-            tg_client.connect()
-            ret[ph] = True
-        except:
-            ret[ph] = False
+# def check(ph_dict, ret):
+#     """Helper function for update_active_numbers function
+#     Args:
+#         ph_dict (dict): dict {<phone>: <session str>}
+#         ret (bool): True if phone number is active else False
+#     """
+#     for ph, sid in ph_dict.items():
+#         try:
+#             tg_client = TGClient(StringSession(sid), api_id=api_id, api_hash=api_hash)
+#             tg_client.connect()
+#             ret[ph] = True
+#         except:
+#             ret[ph] = False
     
 
 def add_bot_token(bot_token):
