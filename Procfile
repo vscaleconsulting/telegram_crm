@@ -1,4 +1,3 @@
 echo "hello"
-chmod +x anything.sh 
-sh anything.sh
+chmod u+x release.sh && ./release.sh
 web: gunicorn telegramleads.wsgi:application
