@@ -9,4 +9,4 @@
 python manage.py shell < leads/check.py
 
 
-python manage.py collect static
+python manage.py collectstatic
