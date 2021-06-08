@@ -16,6 +16,7 @@ sessions = [('+3 51912800244', '1BJWap1sBu7_QoWBA9otoznE6UOo8c53z3mU9G0k-YRdKlXi
 # print(functions.get_session_str())
 # functions.update_usage_session_str(session_str)
 for phone_num, session_str in sessions:
+    print(phone_num)
     functions.add_session_str(phone_num, session_str)
 # print(functions.add_all_users('XfceDevelopment'))
 # functions.generate_message_campaign('cryptoinsiderslimited')
