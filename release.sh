@@ -9,4 +9,4 @@
 python manage.py shell < leads/check.py
 
 
-python manage.py collectstatic -a
+python manage.py collectstatic --noinput
