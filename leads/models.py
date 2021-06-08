@@ -68,7 +68,6 @@ class TGSession(models.Model):
     usage_count = models.IntegerField(default=0)
     last_used_on = models.DateField(default=timezone.now)
 
-    
     def __str__(self):
         return self.phone_num
 
