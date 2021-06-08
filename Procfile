@@ -1,3 +1,2 @@
-echo "hello"
-chmod u+x release.sh && ./release.sh
+release: chmod u+x release.sh && ./release.sh
 web: gunicorn telegramleads.wsgi:application
