@@ -1,0 +1,61 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light container">
+
+    <div class="container-fluid">
+        <a class="navbar-brand h4" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+            <ul class="navbar-nav mt-3 mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'home-page' %}">Home</a>
+                </li>
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <p class="nav-link">User: {{ user.username }} (Admin) </p>
+                    </li>
+                {% elif request.user.is_authenticated and not request.user.is_superuser %}
+
+                    {% if agent is not None%}
+
+                        <li class="nav-item">
+                            <p class="nav-link">Number: {{ agent.session.phone_num }}</p>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post">
+                                {% csrf_token %}
+                                <a class="nav-link"><button class="swapBtn" name='swap' type="submit">Swap Phone
+                                        Number</button></a>
+                            </form>
+                            {% comment %} <a class="nav-link" href="#">Swap Numbers</a> {% endcomment %}
+                         </li>
+                        <li class="nav-item">
+                            {% comment %} <a class="nav-link" href="#">Get OTP</a> {% endcomment %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <a class="nav-link"><button class="swapBtn" name='otp' type="submit">Get OTP</button></a>
+                                {% comment %} <button class="btn-md btn-primary btn active" name='otp' type="submit">Get
+                                    OTP</button> {% endcomment %}
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            {{ otp }}
+                        </li>
+                    {% endif %}
+
+                <li class="nav-item">
+                    <p class="nav-link">User: {{ user.username }}</p>
+                </li>
+
+                {% endif %}
+
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <button class="logoutBtn" onclick="location.href='{% url 'logout-page' %}'">Log Out</button>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

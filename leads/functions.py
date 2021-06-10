@@ -183,6 +183,7 @@ def mark_contacted(id):
 
 
 def check_grps():
+    print('Updating Database...')
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     client = TelegramClient(StringSession(

@@ -28,7 +28,7 @@ def leads_list(request):
         # if request.POST.get('otp-button'):
             
     
-    return render(request, 'leads/lead-list.html', context)
+    return render(request, 'leads/lead-list-fancy.html', context)
 
 
 class LeadsListView(generic.View):
@@ -61,10 +61,8 @@ class LeadsListView(generic.View):
         return context
 
     def post(self, request, *args, **kwargs):
-        form = EmptyForm()
         context = self.get_context_data(**kwargs)
         context['otp'] = 'OTP: ' + get_otp(request.user.id)
-        context['form'] = form
         return super(LeadsListView, self).post(request, *args, **kwargs)
 
 
