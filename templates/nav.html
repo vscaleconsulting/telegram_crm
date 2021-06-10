@@ -1,20 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light container">
 
     <div class="container-fluid">
-        <a class="navbar-brand h4" href="#">Navbar</a>
+        <a class="navbar-brand mb-0 h4" href="#">Telegram CRM</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mt-3 mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'home-page' %}">Home</a>
                 </li>
+
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
                         <p class="nav-link">Hello, {{ user.username }} (Admin) </p>
                     </li>
+                {% elif not request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agent-create' %}">Create Acccount</a>
+                    </li>
+                    <button class="btn btn-success ml-3" onclick="location.href='{% url 'login-page' %}'">Login</button>
                 {% elif request.user.is_authenticated and not request.user.is_superuser %}
 
                     {% if agent is not None%}
@@ -25,8 +31,7 @@
                         <li class="nav-item">
                             <form method="post">
                                 {% csrf_token %}
-                                <a class="nav-link"><button class="swapBtn" name='swap' type="submit">Swap Phone
-                                        Number</button></a>
+                                <a class="nav-link"><button class="swapBtn" name='swap' type="submit">🔀</button></a>
                             </form>
                             {% comment %} <a class="nav-link" href="#">Swap Numbers</a> {% endcomment %}
                          </li>
@@ -39,9 +44,13 @@
                                     OTP</button> {% endcomment %}
                             </form>
                         </li>
-                        <li class="nav-item">
-                            {{ otp }}
-                        </li>
+                        {% if otp %}
+                            <li class="nav-item">
+                                <div class="nav-link">
+                                    {{ otp }}
+                                </div>
+                            </li>
+                        {% endif %}
                     {% endif %}
 
                 <li class="nav-item">
@@ -52,7 +61,7 @@
 
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <button class="logoutBtn" onclick="location.href='{% url 'logout-page' %}'">Log Out</button>
+                        <button class="btn btn-danger ml-3" onclick="location.href='{% url 'logout-page' %}'">Log Out</button>
                     </li>
                 {% endif %}
             </ul>
