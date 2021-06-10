@@ -13,7 +13,7 @@
                 </li>
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
-                        <p class="nav-link">User: {{ user.username }} (Admin) </p>
+                        <p class="nav-link">Hello, {{ user.username }} (Admin) </p>
                     </li>
                 {% elif request.user.is_authenticated and not request.user.is_superuser %}
 
@@ -45,7 +45,7 @@
                     {% endif %}
 
                 <li class="nav-item">
-                    <p class="nav-link">User: {{ user.username }}</p>
+                    <p class="nav-link">Hello, {{ user.username }}</p>
                 </li>
 
                 {% endif %}
