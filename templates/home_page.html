@@ -3,18 +3,49 @@
 
 
 {% block css %}
-    <link rel="stylesheet" href="{% static 'home-page.css' %}">
+<link rel="stylesheet" href="{% static 'home-page.css' %}">
 {% endblock %}
 
 
 {% block title %}
-    Login Page
+Login Page
 {% endblock %}
 
 
 {% block body %}
-    {% include "nav.html" %}
-    <div class="container h-100 d-flex justify-content-center">
+{% include "nav.html" %}
+
+<div class="home-contents text-center pt-5">
+    <div class="container">
+        <div class="col-md-8 m-auto">
+            <img src="{% static 'images/home.svg' %}" alt="" style="width: 320px;">
+            <h1 style="font-size: 35px;font-weight: 700;" class="mt-3 mb-2">Telegram CRM of leads</h1>
+            <h5>CRM helps to manage your leads</h5>
+
+            {% if not request.user.is_authenticated %}
+                <button class="btn-md btn-success btn" onclick="location.href='{% url 'login-page' %}'">Login</button>
+                <button class="btn-md btn-primary btn" onclick="location.href='{% url 'agent-create' %}'">Create Account</button>            
+
+            {% elif not request.user.is_staff and request.user.is_authenticated %}
+                <button class="leadsBtn" onclick="location.href='{% url 'lead-list' %}'">See your leads</button>
+                
+            {% endif %}
+
+            {% if request.user.is_staff %}
+                <button class="leadsBtn" onclick="location.href='{% url 'agent-list' %}'">Agents</button>
+                <button class="leadsBtn" onclick="location.href='/admin'">Admin</button>
+                <button class="leadsBtn" onclick="location.href='{% url 'add-leads' %}'">Add Leads</button>
+                
+            {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% comment %} <div class="container h-100 d-flex justify-content-center">
     <div class="jumbotron my-auto">
         <div class="container text-center">
             <h1>Hello</h1>
@@ -22,27 +53,29 @@
 
         <div class="container text-center">
             {% if not request.user.is_authenticated %}
-                <a href="{% url 'login-page' %}">Login</a>
-                <a href="{% url 'agent-create' %}">Create Acc</a>
-                
+
+
+            <a href="{% url 'login-page' %}">Login</a>
+            <a href="{% url 'agent-create' %}">Create Acc</a>
+
             {% else %}
-                <a href="{% url 'logout-page' %}"> Logout</a>
+
+
+            <a href="{% url 'logout-page' %}"> Logout</a>
             {% endif %}
 
             {% if not request.user.is_staff and request.user.is_authenticated %}
-                <a href="/leads"> Leads</a>
+            <a href="/leads"> Leads</a>
             {% endif %}
-            
+
             {% if request.user.is_staff %}
-                <a href="{% url 'agent-list' %}">Agents</a>
-                <a href="/admin"> Admin</a>
-                <a href="{% url 'add-leads' %}">Add Leads</a>
+            <a href="{% url 'agent-list' %}">Agents</a>
+            <a href="/admin"> Admin</a>
+            <a href="{% url 'add-leads' %}">Add Leads</a>
             {% endif %}
 
         </div>
 
     </div>
-    </div>
+</div> {% endcomment %}
 {% endblock %}
-
-

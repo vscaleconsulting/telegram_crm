@@ -22,3 +22,13 @@ class AddLeadForm(forms.Form):
     target_group = forms.CharField(max_length=255, required=True)
     source_group = forms.CharField(max_length=255, required=True)
   
+  
+# class CarForm(forms.ModelForm):
+#     #other fields…. 
+#     OPTIONS = (
+#         ('volvo','Volvo'),
+#         ('saab','Saab'),
+#         ('fiat','Fiat'), 
+#         ('audi','Audi'), 
+#         )
+#     car_maker = forms.ChoiceField(required=True, choices=OPTIONS)

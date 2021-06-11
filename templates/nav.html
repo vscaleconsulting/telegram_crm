@@ -13,58 +13,97 @@
                 </li>
 
                 {% if request.user.is_superuser %}
-                    <li class="nav-item">
-                        <p class="nav-link">Hello, {{ user.username }} (Admin) </p>
-                    </li>
+                <li class="nav-item">
+                    <p class="nav-link text-dark">Hello, {{ user.username }} (Admin) </p>
+                </li>
                 {% elif not request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'agent-create' %}">Create Acccount</a>
-                    </li>
-                    <button class="btn btn-success ml-3" onclick="location.href='{% url 'login-page' %}'">Login</button>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'agent-create' %}">Create Acccount</a>
+                </li>
+                <button class="btn btn-success ml-3" onclick="location.href='{% url 'login-page' %}'">Login</button>
                 {% elif request.user.is_authenticated and not request.user.is_superuser %}
 
-                    {% if agent is not None%}
-
-                        <li class="nav-item">
-                            <p class="nav-link">Number: {{ agent.session.phone_num }}</p>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post">
-                                {% csrf_token %}
-                                <a class="nav-link"><button class="swapBtn" name='swap' type="submit">🔀</button></a>
-                            </form>
-                            {% comment %} <a class="nav-link" href="#">Swap Numbers</a> {% endcomment %}
-                         </li>
-                        <li class="nav-item">
-                            {% comment %} <a class="nav-link" href="#">Get OTP</a> {% endcomment %}
-                            <form method="post">
-                                {% csrf_token %}
-                                <a class="nav-link"><button class="swapBtn" name='otp' type="submit">Get OTP</button></a>
-                                {% comment %} <button class="btn-md btn-primary btn active" name='otp' type="submit">Get
-                                    OTP</button> {% endcomment %}
-                            </form>
-                        </li>
-                        {% if otp %}
-                            <li class="nav-item">
-                                <div class="nav-link">
-                                    {{ otp }}
-                                </div>
-                            </li>
-                        {% endif %}
-                    {% endif %}
+                {% if agent is not None%}
 
                 <li class="nav-item">
-                    <p class="nav-link">Hello, {{ user.username }}</p>
+                    <div class="nav-link text-dark" style="display: inline-block;">Number:
+                        <div id="a" style="display: inline-block;">{{ agent.session.phone_num }}</div>
+                        <img onclick="copyDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
+                            src="https://lh3.googleusercontent.com/proxy/IAdiJfdxJUbQ7zYxtN_jfD9RSv3tqpvoX4Q-0b8dJjC779lQHv_otaIEYVXl7pttkEUJkWMIS4OZAy38OxVhXMpXoFohXnPi64T1_kce8vaRqpUvjRA">
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <form method="post">
+                        {% csrf_token %}
+                        <a class="nav-link"><button class="swapBtn" name='swap' type="submit">🔀</button></a>
+                    </form>
+                    {% comment %} <a class="nav-link" href="#">Swap Numbers</a> {% endcomment %}
+                </li>
+                <li class="nav-item">
+                    {% comment %} <a class="nav-link" href="#">Get OTP</a> {% endcomment %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <a class="nav-link"><button class="swapBtn" name='otp' type="submit">Get OTP</button></a>
+                        {% comment %} <button class="btn-md btn-primary btn active" name='otp' type="submit">Get
+                            OTP</button> {% endcomment %}
+                    </form>
+                </li>
+                    {% if otp %}
+                        <li class="nav-item">
+                            <div class="nav-link text-dark" style="display: inline-block;">
+                                <div id="otp-field" style="display: inline-block;">{{ otp }}</div>
+                                <img onclick="copyNumOtpDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
+                                    src="https://lh3.googleusercontent.com/proxy/IAdiJfdxJUbQ7zYxtN_jfD9RSv3tqpvoX4Q-0b8dJjC779lQHv_otaIEYVXl7pttkEUJkWMIS4OZAy38OxVhXMpXoFohXnPi64T1_kce8vaRqpUvjRA">
+                            </div>
+                        </li>
+                    {% endif %}
+                {% endif %}
+
+                <li class="nav-item">
+                    <p class="nav-link text-dark">Hello, {{ user.username }}</p>
                 </li>
 
                 {% endif %}
 
                 {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <button class="btn btn-danger ml-3" onclick="location.href='{% url 'logout-page' %}'">Log Out</button>
-                    </li>
+                <li class="nav-item">
+                    <button class="btn btn-danger ml-3" onclick="location.href='{% url 'logout-page' %}'">Log
+                        Out</button>
+                </li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
+<script>
+    function copyNumDivToClipboard() {
+        var range = document.createRange();
+        range.selectNode(document.getElementById("a"));
+        window.getSelection().removeAllRanges(); // clear current selection
+        window.getSelection().addRange(range); // to select text
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges(); // to deselect
+    }
+</script>
+
+<script>
+    function copyOtpDivToClipboard() {
+        var range = document.createRange();
+        range.selectNode(document.getElementById("otp-field"));
+        window.getSelection().removeAllRanges(); // clear current selection
+        window.getSelection().addRange(range); // to select text
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges(); // to deselect
+    }
+</script>
+
+
+{% comment %} <script type="text/javascript">
+    const myInput = document.getElementById('input');
+    const btnCopy = document.getElementById('copy-clipboard');
+    btnCopy.onclick = function () {
+        myInput.select();
+        document.execCommand('Copy')
+    }
+</script> {% endcomment %}
