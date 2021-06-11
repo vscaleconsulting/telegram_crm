@@ -1,5 +1,5 @@
 from django import forms
-from leads.models import Agent
+from leads.models import Agent, Category
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
@@ -32,3 +32,12 @@ class AddLeadForm(forms.Form):
 #         ('audi','Audi'), 
 #         )
 #     car_maker = forms.ChoiceField(required=True, choices=OPTIONS)
+
+class CategoryModelForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), initial=0, widget=forms.Select(attrs={"onChange":'submit()'}))
+    
+    class Meta:
+        model = Category
+        fields = (
+            'category',
+        )

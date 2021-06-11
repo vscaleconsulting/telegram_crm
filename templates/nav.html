@@ -1,3 +1,5 @@
+{% load static %}
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light container">
 
     <div class="container-fluid">
@@ -28,8 +30,8 @@
                 <li class="nav-item">
                     <div class="nav-link text-dark" style="display: inline-block;">Number:
                         <div id="a" style="display: inline-block;">{{ agent.session.phone_num }}</div>
-                        <img onclick="copyDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
-                            src="https://lh3.googleusercontent.com/proxy/IAdiJfdxJUbQ7zYxtN_jfD9RSv3tqpvoX4Q-0b8dJjC779lQHv_otaIEYVXl7pttkEUJkWMIS4OZAy38OxVhXMpXoFohXnPi64T1_kce8vaRqpUvjRA">
+                        <img onclick="copyNumDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
+                            src="{% static 'images/ctc.png' %}">
                     </div>
                 </li>
                 <li class="nav-item">
@@ -52,8 +54,8 @@
                         <li class="nav-item">
                             <div class="nav-link text-dark" style="display: inline-block;">
                                 <div id="otp-field" style="display: inline-block;">{{ otp }}</div>
-                                <img onclick="copyNumOtpDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
-                                    src="https://lh3.googleusercontent.com/proxy/IAdiJfdxJUbQ7zYxtN_jfD9RSv3tqpvoX4Q-0b8dJjC779lQHv_otaIEYVXl7pttkEUJkWMIS4OZAy38OxVhXMpXoFohXnPi64T1_kce8vaRqpUvjRA">
+                                <img onclick="copyOtpDivToClipboard()" id='copy-clipboard' style="cursor:pointer;"
+                                    src="{% static 'images/ctc.png' %}">
                             </div>
                         </li>
                     {% endif %}
