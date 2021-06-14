@@ -1,8 +1,3 @@
-# Webogram init
-cd webogram
-npm start &
-cd ..
-
 python manage.py makemigrations
 python manage.py migrate
 
