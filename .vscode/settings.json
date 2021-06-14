@@ -1,7 +1,6 @@
 {
-    "python.languageServer": "Pylance",
+    "python.languageServer": "Jedi",
     "terminal.integrated.fontFamily": "Consolas",
-    "python.pythonPath": "venv\\Scripts\\python.exe",
     "files.autoSave": "onFocusChange",
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
