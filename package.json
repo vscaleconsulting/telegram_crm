@@ -80,5 +80,9 @@
       "chrome"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "engines": {
+    "node": ">= 6.9.4",
+    "npm": ">= 4.4.0"
+  }
 }
