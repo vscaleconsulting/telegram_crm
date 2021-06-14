@@ -8,8 +8,10 @@ from .config import *
 import asyncio
 from .models import TGSession, TGBot, Lead, MessageCampaign, Agent
 from django.utils import timezone
+from requests import get
 
-
+def get_ip():
+    return get('https://api.ipify.org').text
 
 def get_session(random=False):
     sessions = TGSession.objects.order_by('last_used_on', 'usage_count')

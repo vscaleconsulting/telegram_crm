@@ -1,5 +1,5 @@
-from leads.models import User
-from leads import functions
+# from leads.models import User
+# from leads import functions
 
 # print(User.objects.all())
 # phone_num = '+79058127836'
@@ -15,9 +15,6 @@ sessions = [('+3 51912800244', '1BJWap1sBu7_QoWBA9otoznE6UOo8c53z3mU9G0k-YRdKlXi
 # functions.add_user_session(phone_num, session_str)
 # print(functions.get_session_str())
 # functions.update_usage_session_str(session_str)
-for phone_num, session_str in sessions:
-    print(phone_num)
-    functions.add_session_str(phone_num, session_str)
 # print(functions.add_all_users('XfceDevelopment'))
 # functions.generate_message_campaign('cryptoinsiderslimited')
 # print(functions.get_leads_to_msg(2, 'cryptoinsiderslimited'))
@@ -25,3 +22,31 @@ for phone_num, session_str in sessions:
 # functions.check_grps()
 # user = User.objects.get(username='y')
 # print(functions.get_otp(user))
+
+# for phone_num, session_str in sessions:
+#     print(phone_num)
+#     functions.add_session_str(phone_num, session_str)
+
+from telethon.sync import TelegramClient
+from telethon import functions, types
+from telethon.sessions import StringSession
+from requests import get
+
+def get_ip():
+    return get('https://api.ipify.org').text
+
+api_id = 1868530
+api_hash = "edf7d1e794e0b4a5596aa27c29d17eba"
+
+ip = get_ip()
+
+with TelegramClient(StringSession(sessions[0][1]), api_id, api_hash) as client:
+    result = client(functions.account.GetAuthorizationsRequest())
+    for r in list(result.authorizations):
+        if r.ip == ip and r.app_name != 'telemail':
+            print(r)
+            print('session found')
+            client(functions.account.ResetAuthorizationRequest(r.hash))
+            break
+    else:
+        print('not found')

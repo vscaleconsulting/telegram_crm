@@ -27,3 +27,20 @@
 .right{
     text-align: right;
 }
+
+.split {
+    height:100%;
+    z-index: -1;
+    overflow: auto;
+  }
+
+  .data {
+    float: left;
+    width: 80%;
+  }
+
+  .chat {
+      height: 600px;
+    float: right;
+    width: 20%;
+  }
