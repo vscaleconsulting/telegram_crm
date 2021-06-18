@@ -4,5 +4,5 @@ from leads.functions import check_grps
 
 def start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_grps, 'interval', seconds=60)
+    scheduler.add_job(check_grps, 'interval', seconds=1800)
     scheduler.start()

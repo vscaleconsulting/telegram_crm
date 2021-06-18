@@ -1,0 +1,157 @@
+{% extends 'base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'leads/lead-list-fancy.css' %}">
+{% endblock %}
+
+{% block title %}
+Lead List
+{% endblock %}
+
+{% block body %}
+{% include "nav.html" %}
+
+<section class="leads ">
+	<div class="container">
+		<div class="top d-flex m-auto">
+			<div class="col-md-6">
+				<h1>Leads</h1>
+				<h4 class="text-warning">Pending Leads</h4>
+			</div>
+			<div class="col-md-6 right mt-4">
+				<a href="{% url 'repopulate-list' %}" class="btn-md btn-info btn active" role="button"
+					aria-pressed="true">Repopulate</a>
+				{% comment %} <button class="repopulate">Repopulate</button> {% endcomment %}
+			</div>
+		</div>
+		<hr>
+		<div class="table-responsive">
+			<table class="table">
+				<thead class="thead">
+					<th scope="col">#</th>
+					<th scope="col">First Name</th>
+					<th scope="col">Agent</th>
+					<th scope="col">Target Group</th>
+					<th scope="col">Handle</th>
+					<th scope="col">Contacted</th>
+				</thead>
+				<tbody>
+					{% for campaign in campaign_not_contacted %}
+					<tr>
+						<th scope="row">{{ forloop.counter }}</th>
+						<td>{{ campaign.lead.first_name }}</td>
+						<td>{{ request.user.username }}</td>
+						<td>{{ campaign.target_grp }}</td>
+						<td><a
+								href="https://telegram.me/{{ campaign.lead.username }}">https://telegram.me/{{ campaign.lead.username }}</a>
+						</td>
+						<td><a href="{% url 'update-db' campaign.id %}">✔️</a></td>
+						{% comment %} <td>{{ campaign.category }}</td> {% endcomment %}
+						
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>
+
+<section class="completed">
+	<div class="container" id='completed'>
+		<h2 class="text-success mb-2">
+			Completed Leads
+		</h2>
+		<hr>
+		<div class="table-responsive">
+			<table class="table">
+				<thead class="thead">
+					<th scope="col">#</th>
+					<th scope="col">First Name</th>
+					<th scope="col">Target Group</th>
+					<th scope="col">Handle</th>
+					<th scope="col">Joined</th>
+					<th scope="col">Status</th>
+				</thead>
+				<tbody>
+					{% for campaign in campaign_contacted %}
+					<tr>
+						<th scope="row">{{ forloop.counter }}</th>
+						<td>{{ campaign.lead.first_name }}</td>
+						<td>{{ campaign.target_grp }}</td>
+						<td>
+							<a
+								href="https://telegram.me/{{ campaign.lead.username }}">https://telegram.me/{{ campaign.lead.username }}</a>
+						</td>
+						{% if campaign.joined %}
+						<td>Yes</td>
+						{% else %}
+						<td>No</td>
+						{% endif %}
+						<td>
+							<form id='jsform' method="post">
+								{% csrf_token %}
+								<select name="category-{{ campaign.lead.username }}" onchange="submit()">
+									{% if campaign.category == None %}
+										<option value="none" selected disabled hidden>
+											Select an Option
+										</option>
+										<option value="Talking">Talking</option>
+										<option value="Not Replied">Not Interested</option>
+										<option value="Not Replied">Completed</option>
+										<option value="Not Replied">Replied</option>
+										
+									{% else %}
+										{% if campaign.category == 'Taking' %}
+											<option value="Talking" selected>Talking</option>
+										{% else %}
+											<option value="Talking">Talking</option>
+										{% endif %}
+										{% if campaign.category == 'Not Replied' %}
+											<option value="Not Replied" selected>Not Interested</option>
+										{% else %}
+											<option value="Not Replied">Not Interested</option>
+										{% endif %}
+										{% if campaign.category == 'Completed' %}
+											<option value="Completed" selected>Completed</option>
+										{% else %}
+											<option value="Completed">Completed</option>
+										{% endif %}
+										{% if campaign.category == 'Replied' %}
+											<option value="Replied" selected>Replied</option>
+										{% else %}
+											<option value="Replied">Replied</option>
+										{% endif %}
+									{% endif %}
+								</select>							
+							</form>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+{% comment %} <script type="text/javascript">
+	document.getElementById('jsform').submit();
+</script> {% endcomment %}
+
+<script>
+	$(document).ready(function () {
+		setInterval(function () {
+			$("#completed").load(window.location.href + " #completed");
+		}, 600000);
+	});
+</script>
+
+
+
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.esm.min.js"></script> {% endcomment %}
+{% endblock %}

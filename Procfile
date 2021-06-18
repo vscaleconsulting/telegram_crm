@@ -1,5 +1,2 @@
-chmod +x anything.sh 
-
-./anything.sh
-
+release: chmod u+x release.sh && ./release.sh
 web: gunicorn telegramleads.wsgi:application

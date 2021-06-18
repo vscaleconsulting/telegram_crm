@@ -31,7 +31,15 @@ class Lead(models.Model):
     def __str__(self):
         return f'{self.username}'
 
+class Category(models.Model):
+    category = models.CharField(max_length=50, default=0)
 
+    def __str__(self):
+        return u'{0}'.format(self.category)
+    
+    
+    class Meta:
+        verbose_name_plural = 'Categories'
 # class InstantMessageCampaign(models.Model):
 #     __tablename__ = 'campaign_instant'
 
@@ -53,6 +61,7 @@ class MessageCampaign(models.Model):
     contacted = models.BooleanField(default=False)
     joined = models.BooleanField(default=False)
     session_used = models.ForeignKey('TGSession', on_delete=models.SET_NULL, null=True, default=None, blank=True)
+    category = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         unique_together=(('lead', 'target_grp'),)
@@ -68,7 +77,6 @@ class TGSession(models.Model):
     usage_count = models.IntegerField(default=0)
     last_used_on = models.DateField(default=timezone.now)
 
-    
     def __str__(self):
         return self.phone_num
 
@@ -84,3 +92,5 @@ class TGBot(models.Model):
     
     class Meta:
         verbose_name_plural = 'TGBots'
+        
+
