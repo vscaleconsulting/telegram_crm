@@ -12,6 +12,15 @@ from django.utils import timezone
 
 
 def get_session(random=False):
+    
+    """Gets the least used session
+
+    Args:
+        random (bool, optional): gives random session if True. Defaults to False
+        
+    Returns:
+        TGSession.object: TGSession queryset
+    """
     sessions = TGSession.objects.order_by('last_used_on', 'usage_count')
     if random:
         session = sessions[randint(1, (len(sessions)-1) // 2)]
@@ -23,14 +32,31 @@ def get_session(random=False):
 
 
 def get_session_str():
+    """Returns the least used session string
+
+    Returns:
+        str: session string
+    """
+
     return TGSession.objects.order_by('last_used_on', 'usage_count').first().session_str
 
 
 def get_bot_token():
+    """Returns the least used bot token
+
+    Returns:
+        str: bot token
+    """
     return TGBot.objects.order_by('last_used_on', 'usage_count').first().bot_token
 
 
 def add_session_str(phone_num, session_str):
+    """Adds new session to the database
+
+    Args:
+        phone_num (int): phone number of the session
+        session_str (str): session string
+    """
     try:
         TGSession.objects.create(
             phone_num='+' + phone_num.replace(' ', '').lstrip('+'), session_str=session_str)
@@ -38,6 +64,11 @@ def add_session_str(phone_num, session_str):
         pass
 
 def assign_new_session(user):
+    """Assigns New session to the agent
+
+    Args:
+        user (User.object): Agent Model Object
+    """
     agent = Agent.objects.get(user=user)
     session = get_session()
     if session == agent.session:
@@ -46,6 +77,14 @@ def assign_new_session(user):
     agent.save()
 
 def get_otp(user):
+    """Fetch the otp for the number assigned
+
+    Args:
+        user (User.object): User Model Object
+
+    Returns:
+        str: OTP for the session if successful else 'Retry'
+    """
     agent = Agent.objects.get(user=user)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -74,10 +113,20 @@ def get_otp(user):
     
 
 def add_bot_token(bot_token):
+    """Add bot token to the database
+
+    Args:
+        bot_token (str): bot token
+    """
     TGBot.objects.create(bot_token=bot_token)
 
 
 def update_usage_session_str(session_str):
+    """Update the usage count of the session
+
+    Args:
+        session_str (str): session string
+    """
     session = TGSession.objects.get(session_str=session_str)
     session.usage_count += 1
     session.last_used_on = timezone.now()
@@ -85,6 +134,11 @@ def update_usage_session_str(session_str):
 
 
 def update_usage_bot_token(bot_token):
+    """Update the usage count of the bot token
+
+    Args:
+        bot_token (str): bot token
+    """
     session = TGBot.objects.get(bot_token=bot_token)
     session.usage_count += 1
     session.last_used_on = timezone.now()
@@ -92,6 +146,14 @@ def update_usage_bot_token(bot_token):
 
 
 def add_all_users(group):
+    """Adds Leads to the database from a source group
+
+    Args:
+        group (str): name of the telegram group
+
+    Returns:
+        [int]: Number of leads generated
+    """
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     # client = TelegramClient(StringSession(
@@ -135,18 +197,33 @@ def add_all_users(group):
 
 
 def generate_message_campaign(target_grp, source_grp=None):
+    """Generates campaign messages for the users in source_grp to add them to the target group
+
+    Args:
+        target_grp (str): target group username
+        source_grp (str, optional): source group username. Defaults to None.
+    """
     if source_grp is None:
         leads = Lead.objects.all()
     else:
         leads = Lead.objects.filter(grp_username=source_grp).all()
-    campaign = []
-    for lead in leads:
-        campaign.append(MessageCampaign(lead=lead, target_grp=target_grp))
+
+    campaign = [MessageCampaign(lead=lead, target_grp=target_grp) for lead in leads]
 
     MessageCampaign.objects.bulk_create(campaign, ignore_conflicts=True)
 
 
 def get_leads_to_msg(agent_id, target_grp=None, entries=10):
+    """returns a list of MessageCampaign.object containing leads to message
+
+    Args:
+        agent_id (int): agent id
+        target_grp (str, optional): target group username. Defaults to None.
+        entries (int, optional): number of leads to get. Defaults to 10.
+
+    Returns:
+        list: list of MessageCampaign.object containing leads to message
+    """
     agent = Agent.objects.get(user_id = agent_id)
     if target_grp is None:
         not_contacted = MessageCampaign.objects.filter(agent=agent, contacted=False).all()
@@ -176,6 +253,11 @@ def get_leads_to_msg(agent_id, target_grp=None, entries=10):
 
 
 def mark_contacted(id):
+    """Mark the Leads as Contacted in the database
+
+    Args:
+        id [int]: pk of the lead
+    """
     entry = MessageCampaign.objects.get(id=id)
     entry.contacted = True
     entry.session_used = entry.agent.session
@@ -183,6 +265,8 @@ def mark_contacted(id):
 
 
 def check_grps():
+    """Updates the joined column to True in the database if a contacted user joins the target group
+    """
     print('Updating Database...')
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)

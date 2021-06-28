@@ -8,6 +8,8 @@ class User(AbstractUser):
 
 
 class Agent(models.Model):
+    
+    """ Model for Agent """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     session = models.ForeignKey('TGSession', on_delete=models.SET_NULL, null=True, default=None, blank=True)
 
@@ -16,7 +18,10 @@ class Agent(models.Model):
 
 
 class Lead(models.Model):
+    """ Model For Leads
+    """
 
+ 
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, primary_key=True)
@@ -32,6 +37,7 @@ class Lead(models.Model):
         return f'{self.username}'
 
 class Category(models.Model):
+    """ Model For Category """
     category = models.CharField(max_length=50, default=0)
 
     def __str__(self):
@@ -93,4 +99,3 @@ class TGBot(models.Model):
     class Meta:
         verbose_name_plural = 'TGBots'
         
-

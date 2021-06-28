@@ -3,7 +3,6 @@ from leads.models import Agent, Category
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
-
 User = get_user_model()
 
 class AgentModelForm(forms.ModelForm):
@@ -22,16 +21,6 @@ class AddLeadForm(forms.Form):
     target_group = forms.CharField(max_length=255, required=True)
     source_group = forms.CharField(max_length=255, required=True)
   
-  
-# class CarForm(forms.ModelForm):
-#     #other fields…. 
-#     OPTIONS = (
-#         ('volvo','Volvo'),
-#         ('saab','Saab'),
-#         ('fiat','Fiat'), 
-#         ('audi','Audi'), 
-#         )
-#     car_maker = forms.ChoiceField(required=True, choices=OPTIONS)
 
 class CategoryModelForm(forms.ModelForm):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), initial=0, widget=forms.Select(attrs={"onChange":'submit()'}))
