@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponse, request
 from django.views import generic
 from .models import Lead, MessageCampaign, Agent
-from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session
-from agents.forms import CategoryModelForm
+from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session, send_mess
+from agents.forms import CategoryModelForm, SendMessageForm
 
 
 def leads_list(request):
@@ -112,3 +112,16 @@ def category_update(request, lead_id):
             
     return render(request, 'leads/category-update.html', context)
     
+def send_mess_view(request):
+    form = SendMessageForm()
+    context = {
+        'form': form
+    }
+    if request.method =='POST':
+        form = SendMessageForm(request.POST)
+        if form.is_valid():
+            instance = form
+            mess = instance.cleaned_data['Message']
+            send_mess(mess)
+
+    return render(request, 'leads/msg-leads.html', context)

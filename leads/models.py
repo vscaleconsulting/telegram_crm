@@ -94,3 +94,11 @@ class TGBot(models.Model):
         verbose_name_plural = 'TGBots'
         
 
+class TelegramMessage(models.Model):
+    message_id = models.IntegerField()
+    sender_ph = models.IntegerField()
+    from_id = models.IntegerField()
+    peer_id = models.IntegerField()
+    datetime = models.DateTimeField()
+    message = models.TextField()
+    out = models.BooleanField()

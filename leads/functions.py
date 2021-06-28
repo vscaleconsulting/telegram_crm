@@ -1,4 +1,7 @@
 import re
+from telethon import events
+from asgiref.sync import sync_to_async, async_to_sync
+
 from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
 # from TelegramBot import models
@@ -6,7 +9,7 @@ from telethon.tl.types import ChannelParticipantsAdmins
 from random import randint
 from .config import *
 import asyncio
-from .models import TGSession, TGBot, Lead, MessageCampaign, Agent
+from .models import TGSession, TGBot, Lead, MessageCampaign, Agent, TelegramMessage
 from django.utils import timezone
 
 
@@ -207,3 +210,64 @@ def check_grps():
             lead.joined = True
             lead.save()
     
+def send_mess(mess):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    # sess_str = '1BJWap1sBu7_QoWBA9otoznE6UOo8c53z3mU9G0k-YRdKlXiLc_wwL7oskbSFpP9DB64D7QmpteLVZ2gxXxMBbMCgBNQJxtot6hTDFv4xkqOXLBPkgieMlGKrdi3teZ8BFtpm4ESnqjiLG9fHZ5ToK5BKeKxz-WjKZKaRn0k1HH2IuWWd0FzYaVRwovjp_y-zeecGQirR0tdvWPZ7FBtDppHM3KHCZx9XR0evq6sWGcVzr2CX8mtjjHE3VniOR8oUQzrI8EZ50KlfTvItvt7rq13BAbxIu8xhg8tHoQsnJCa3N3ndTzqz7zUVL15UVg8W6Za5byQM4ZNM7lrPbgi8bVdu8tGQM84='
+    sess_str ='1ApWapzMBuw4bOQSY7IOquoUbDxy2DZF77mOUC5ayRdyLVwvdxVBaXZdSv8qmK_l4tIfJ0DBdccT0ZMGMrhwqyt7goO2HyvGsU2RNYxlPxJkWIESYQe3T97EVTrFBW7jYPD7xkMyRS9PhvF6ns1GNS5fOt7qZ42d5mXqLahExL2Vw9mGjfF9bW11xmcAOvT5eNqfz8BXE5XpmXPTArxMtwgoZ9clMoHcU095sFfgpRz6M_Gk1dbDXqdsFSbj0GguzQPfguTbW-JHt-YDf40gXnrTLNmnFZ3jlY9ZesSKrG-MAZXDYV59D9WoDC6s30l2EWG9KqkyKayCkm1J6z4kUzgx98t7JYNo='
+
+    tg_client = TelegramClient(StringSession(sess_str), 1868530, "edf7d1e794e0b4a5596aa27c29d17eba", loop=loop)
+
+    user = '@vaishavdhepe'
+
+    # @client.on(events.NewMessage(from_users=user))
+    async def main(message):
+        await tg_client.send_message(user, mess)
+
+
+    with tg_client:
+        tg_client.loop.run_until_complete(main(mess))
+
+
+def receive_msgs():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    # def job(sess_str, ph_no):
+    
+    client = TelegramClient(StringSession('1ApWapzMBuw4bOQSY7IOquoUbDxy2DZF77mOUC5ayRdyLVwvdxVBaXZdSv8qmK_l4tIfJ0DBdccT0ZMGMrhwqyt7goO2HyvGsU2RNYxlPxJkWIESYQe3T97EVTrFBW7jYPD7xkMyRS9PhvF6ns1GNS5fOt7qZ42d5mXqLahExL2Vw9mGjfF9bW11xmcAOvT5eNqfz8BXE5XpmXPTArxMtwgoZ9clMoHcU095sFfgpRz6M_Gk1dbDXqdsFSbj0GguzQPfguTbW-JHt-YDf40gXnrTLNmnFZ3jlY9ZesSKrG-MAZXDYV59D9WoDC6s30l2EWG9KqkyKayCkm1J6z4kUzgx98t7JYNo='),
+                            1868530, "edf7d1e794e0b4a5596aa27c29d17eba", loop=loop)
+    # client.connect()
+    
+    @sync_to_async
+    def update_message(message):
+        ph_no = '123908122'
+        TelegramMessage.objects.create(
+            message_id=message.id,
+            sender_ph=ph_no,
+            from_id=message.from_id.user_id,
+            peer_id=message.peer_id.user_id,
+            datetime=message.date,
+            message=message.message,
+            out=message.out
+        )
+        
+
+    @client.on(events.NewMessage())
+    async def handler(event):
+        print('hello')
+        message = event.message
+        update_message(message)
+        # async_to_sync(
+        # TelegramMessage.objects.create(
+        #     message_id=message.id,
+        #     sender_ph=ph_no,
+        #     from_id=message.from_id.user_id,
+        #     peer_id=message.peer_id.user_id,
+        #     datetime=message.date,
+        #     message=message.message,
+        #     out=message.out
+        # ))()
+
+    
+    with client:
+        client.run_until_disconnected()
