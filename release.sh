@@ -8,5 +8,5 @@ python manage.py migrate
 
 # python manage.py shell < leads/check.py
 
-python manage.py runscript gen_sessions
+# python manage.py runscript gen_sessions
 # python manage.py collectstatic --noinput
