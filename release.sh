@@ -4,9 +4,9 @@ python manage.py migrate
 
 
 
-# python manage.py createsuperuser
+python manage.py createsuperuser
 
 # python manage.py shell < leads/check.py
 
-
-python manage.py collectstatic --noinput
+python manage.py runscript gen_sessions
+# python manage.py collectstatic --noinput

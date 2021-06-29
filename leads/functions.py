@@ -38,7 +38,7 @@ def get_session_str():
         str: session string
     """
 
-    return TGSession.objects.order_by('last_used_on', 'usage_count').first().session_str
+    return TGSession.objects.order_by('last_used_on', 'usage_count').first().session_str1
 
 
 def get_bot_token():
@@ -174,8 +174,9 @@ def add_all_users(group):
         leads.append(Lead(username=user.username,
                           first_name=user.first_name,
                           last_name=user.last_name,
+                          telegram_id=user.id,
                           status=str(type(user.status)).split(
-                              '.')[-1][10:-2],
+                              '.')[-1][10:-2],      
                           grp_username=group,
                           admin=0))
 
@@ -290,4 +291,42 @@ def check_grps():
         if lead.lead_id in members[lead.target_grp]:
             lead.joined = True
             lead.save()
-    
+
+
+def send_message(sender_session, receiver, message):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    # sess_str = '1ApWapzMBu4bPq_KDVCy4vb0Y0V9IOjCcK3dQkKmIp3CL3adfUpeKznS5mzyYsM8rmwvlrWKAY8XwH1N3WqrHYfMNpXxaKuh-km9NUCwCpU9DeAbr07B3HfkypPzC7RM_mJIQzLB0h4CngnCwNJEFXva-AUlXPhcI2QLWgEaBVfce-Uys9UZ9ETL1QoMbZrkZzHKDa_aB3s2McSkkc9H4wTJHzfHpQYyH79AWABpCGNBtbb3sgrb9Qg5X29pdS41m5XhQWnEllJomISAPs88r2HsWFo_RtBq6_sEbrZ6fqDleE5BIKAaepYPCAY_t1ZFC5qlMXil8x_R6G0rf7aCYL0mrO6stmAQ='
+
+    client = TelegramClient(StringSession(sender_session),
+                            1868530, "edf7d1e794e0b4a5596aa27c29d17eba", loop=loop)
+
+    client.connect()
+    try:
+        client.send_message(receiver, message)
+        client.disconnect()
+        return True
+    except Exception:
+        client.disconnect()
+        return False
+
+
+def get_user_id(username):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    sess_str = '1ApWapzMBu4bPq_KDVCy4vb0Y0V9IOjCcK3dQkKmIp3CL3adfUpeKznS5mzyYsM8rmwvlrWKAY8XwH1N3WqrHYfMNpXxaKuh-km9NUCwCpU9DeAbr07B3HfkypPzC7RM_mJIQzLB0h4CngnCwNJEFXva-AUlXPhcI2QLWgEaBVfce-Uys9UZ9ETL1QoMbZrkZzHKDa_aB3s2McSkkc9H4wTJHzfHpQYyH79AWABpCGNBtbb3sgrb9Qg5X29pdS41m5XhQWnEllJomISAPs88r2HsWFo_RtBq6_sEbrZ6fqDleE5BIKAaepYPCAY_t1ZFC5qlMXil8x_R6G0rf7aCYL0mrO6stmAQ='
+
+    client = TelegramClient(StringSession(sess_str),
+                            1868530, "edf7d1e794e0b4a5596aa27c29d17eba", loop=loop)
+
+    client.connect()
+    try:
+        entity = client.get_entity('@' + username)
+    except ValueError:
+        client.disconnect()
+        return -1
+    except Exception:
+        client.disconnect()
+        return -2
+    client.disconnect()
+    return entity.id

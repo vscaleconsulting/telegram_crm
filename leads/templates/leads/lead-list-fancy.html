@@ -35,7 +35,7 @@ Lead List
 					<th scope="col">Agent</th>
 					<th scope="col">Target Group</th>
 					<th scope="col">Handle</th>
-					<th scope="col">Contacted</th>
+					<th scope="col">Start Contacting</th>
 				</thead>
 				<tbody>
 					{% for campaign in campaign_not_contacted %}
@@ -73,6 +73,8 @@ Lead List
 					<th scope="col">Handle</th>
 					<th scope="col">Joined</th>
 					<th scope="col">Status</th>
+					<th scope="col">Chat</th>
+
 				</thead>
 				<tbody>
 					{% for campaign in campaign_contacted %}
@@ -127,6 +129,7 @@ Lead List
 								</select>							
 							</form>
 						</td>
+						<td><a href="{% url 'conversation' campaign.id  campaign.lead.telegram_id %}">Chat</td>
 					</tr>
 					{% endfor %}
 				</tbody>

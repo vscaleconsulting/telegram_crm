@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, request
 from django.views import generic
-from .models import Lead, MessageCampaign, Agent
-from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session
+from .models import Lead, MessageCampaign, Agent, TelegramMessage
+from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session, send_message
 from agents.forms import CategoryModelForm
 
 
@@ -111,4 +111,26 @@ def category_update(request, lead_id):
             # lead.save()
             
     return render(request, 'leads/category-update.html', context)
-    
+
+
+class ConversationView(generic.View):
+    def get(self, *args, **kwargs):
+        peer_id = kwargs['peer_id']
+        message_pk = kwargs['messagecampaign_id']
+        lead = MessageCampaign.objects.get(pk=message_pk)
+        ph_used = lead.session_used.phone_num
+        messages = TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all()
+        context = {'messages': messages, 'phone': ph_used}
+
+        return render(self.request, 'leads/conversation-page.html', context=context)
+
+    def post(self, *args, **kwargs):
+        message = self.request.POST.get("message", None)
+        message_pk = kwargs['messagecampaign_id']
+        message_campaign = MessageCampaign.objects.get(pk=message_pk)
+        contact = message_campaign.lead.username
+        # contact = contacts_model.Contact.objects.filter(telegram_id=kwargs['peer_id']).filter(
+        #     user=self.request.user).first()
+        send_message(message_campaign.session_used.session_str3, contact, message)
+        return redirect(
+            reverse("conversation", kwargs={"peer_id": kwargs['peer_id'], "messagecampaign_id": kwargs['messagecampaign_id']}))

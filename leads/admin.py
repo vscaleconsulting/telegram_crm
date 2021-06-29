@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
-from .models import Agent, Lead, User, MessageCampaign, TGBot, TGSession, Category
+from .models import Agent, Lead, User, MessageCampaign, TGBot, TGSession, Category, TelegramMessage
 
 
 class MessageCampaignAdmin(admin.ModelAdmin):
@@ -26,4 +26,6 @@ admin.site.register(Lead)
 admin.site.register(MessageCampaign, MessageCampaignAdmin)
 admin.site.register(TGBot)
 admin.site.register(TGSession)
+admin.site.register(TelegramMessage)
+
 # admin.site.register(Category)

@@ -20,11 +20,11 @@ class Agent(models.Model):
 class Lead(models.Model):
     """ Model For Leads
     """
-
  
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, primary_key=True)
+    telegram_id = models.IntegerField(null=True, blank=True)
     # agent = models.ForeignKey('Agent', on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20)
     grp_username = models.CharField(max_length=255)
@@ -77,8 +77,11 @@ class MessageCampaign(models.Model):
 
 class TGSession(models.Model):
 
-    phone_num = models.CharField(max_length=15)
-    session_str = models.TextField(primary_key=True)
+    phone_num = models.BigIntegerField(primary_key=True)
+    session_str1 = models.TextField()
+    session_str2 = models.TextField()
+    session_str3 = models.TextField()
+    session_str4 = models.TextField()
     is_active = models.BooleanField(default=True)
     usage_count = models.IntegerField(default=0)
     last_used_on = models.DateField(default=timezone.now)
@@ -99,3 +102,15 @@ class TGBot(models.Model):
     class Meta:
         verbose_name_plural = 'TGBots'
         
+class TelegramMessage(models.Model):
+    message_id = models.IntegerField()
+    tg_session = models.ForeignKey(TGSession, on_delete=models.SET_NULL, null=True)
+    from_id = models.IntegerField()
+    peer_id = models.IntegerField()
+    datetime = models.DateTimeField()
+    message = models.TextField()
+    out = models.BooleanField()
+
+    def __str__(self):
+        return f'message: {self.message}, peer: {self.peer_id}'
+
