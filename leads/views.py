@@ -129,11 +129,17 @@ class ConversationView(generic.View):
         message_pk = kwargs['messagecampaign_id']
         message_campaign = MessageCampaign.objects.get(pk=message_pk)
         contact = message_campaign.lead.username
-
+        print(f"this is {list(self.request.POST.keys())}")
         lead_username = list(self.request.POST.keys())[1].split('-')[-1]
-        lead = MessageCampaign.objects.get(lead_id=lead_username)        
-        lead.category = self.request.POST.get(f'category-{lead_username}')
-        lead.save()
+        print(lead_username)
+        if self.request.POST.get(f'category-{contact}') is not None:
+        # form = CategoryModelForm(request.POST, prefix=lead_username)
+            lead = MessageCampaign.objects.get(lead_id=lead_username)
+        # print(lead.category_id)
+            print(lead)
+            print(self.request.POST)
+            lead.category = self.request.POST.get(f'category-{lead_username}')
+            lead.save()
 
         # contact = contacts_model.Contact.objects.filter(telegram_id=kwargs['peer_id']).filter(
         #     user=self.request.user).first()
