@@ -16,7 +16,7 @@
             <a href="{% url 'lead-list' %}"
                class="backBtn">Go Back</a>
         </div>
-        <h4>Phone Number Used: {{ phone }}</h4>
+        <h4>Phone Number Used: {{ lead.session_used.phone_num }}</h4>
         <div id="tab3" class="tryingtoscroll">
             <div class="chatbox scrollbar-hidden" id="thisscrolls">
                 {% comment %} <div class='tryingtoscroll'> {% endcomment %}
@@ -45,7 +45,44 @@
                     </form>
                 </div>
             </div>
-
+            <div>
+            <form id='jsform' method="post">
+                    {% csrf_token %}
+                    <select name="category-{{ lead.lead.username }}" onchange="submit()">
+                        {% if lead.category == None %}
+                            <option value="none" selected disabled hidden>
+                                Select an Option
+                            </option>
+                            <option value="Talking">Talking</option>
+                            <option value="Not Replied">Not Interested</option>
+                            <option value="Not Replied">Completed</option>
+                            <option value="Not Replied">Replied</option>
+                            
+                        {% else %}
+                            {% if lead.category == 'Taking' %}
+                                <option value="Talking" selected>Talking</option>
+                            {% else %}
+                                <option value="Talking">Talking</option>
+                            {% endif %}
+                            {% if lead.category == 'Not Replied' %}
+                                <option value="Not Replied" selected>Not Interested</option>
+                            {% else %}
+                                <option value="Not Replied">Not Interested</option>
+                            {% endif %}
+                            {% if lead.category == 'Completed' %}
+                                <option value="Completed" selected>Completed</option>
+                            {% else %}
+                                <option value="Completed">Completed</option>
+                            {% endif %}
+                            {% if lead.category == 'Replied' %}
+                                <option value="Replied" selected>Replied</option>
+                            {% else %}
+                                <option value="Replied">Replied</option>
+                            {% endif %}
+                        {% endif %}
+                    </select>							
+                </form>
+            </div>
         </div>
 
 

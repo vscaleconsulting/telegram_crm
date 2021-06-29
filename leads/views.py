@@ -28,7 +28,7 @@ def leads_list(request):
             assign_new_session(request.user)
         try:
             lead_username = list(request.POST.keys())[1].split('-')[-1]
-            print(lead_username)
+            # print(lead_username)
             
             # form = CategoryModelForm(request.POST, prefix=lead_username)
             lead = MessageCampaign.objects.get(lead_id=lead_username)
@@ -118,9 +118,9 @@ class ConversationView(generic.View):
         peer_id = kwargs['peer_id']
         message_pk = kwargs['messagecampaign_id']
         lead = MessageCampaign.objects.get(pk=message_pk)
-        ph_used = lead.session_used.phone_num
+        
         messages = TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all()
-        context = {'messages': messages, 'phone': ph_used}
+        context = {'messages': messages, 'lead': lead}
 
         return render(self.request, 'leads/conversation-page.html', context=context)
 
@@ -129,6 +129,12 @@ class ConversationView(generic.View):
         message_pk = kwargs['messagecampaign_id']
         message_campaign = MessageCampaign.objects.get(pk=message_pk)
         contact = message_campaign.lead.username
+
+        lead_username = list(self.request.POST.keys())[1].split('-')[-1]
+        lead = MessageCampaign.objects.get(lead_id=lead_username)        
+        lead.category = self.request.POST.get(f'category-{lead_username}')
+        lead.save()
+
         # contact = contacts_model.Contact.objects.filter(telegram_id=kwargs['peer_id']).filter(
         #     user=self.request.user).first()
         send_message(message_campaign.session_used.session_str3, contact, message)
