@@ -127,6 +127,7 @@
         $(document).ready(function () {
             setInterval(function () {
                 $("#thisischat").load(window.location.href + " #thisischat");
+                console.log($('#myScroll').val());
                 if ($('#myScroll').val() == 'True') {
                     $("#thisscrolls").scrollTop($("#thisscrolls")[0].scrollHeight);                                
                 }
