@@ -6,7 +6,8 @@ from django.views import generic
 from .models import Lead, MessageCampaign, Agent, TelegramMessage
 from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session, send_message
 from agents.forms import CategoryModelForm
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 
 
 def leads_list(request):
@@ -121,7 +122,7 @@ class ConversationView(generic.View):
         lead = MessageCampaign.objects.get(pk=message_pk)
         
         messages = list(TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all())
-        scroll = datetime.now() - messages[-1].datetime.replace(tzinfo=None) < timedelta(seconds=1) if messages else False
+        scroll = timezone.now() - messages[-1].datetime.replace(tzinfo=None) < timedelta(seconds=1) if messages else False
         context = {'messages': messages, 'lead': lead, 'scroll': scroll}
 
         return render(self.request, 'leads/conversation-page.html', context=context)
