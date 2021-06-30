@@ -122,7 +122,9 @@ class ConversationView(generic.View):
         lead = MessageCampaign.objects.get(pk=message_pk)
         
         messages = list(TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all())
-        scroll = timezone.now().replace(tzinfo=None) - messages[-1].datetime.replace(tzinfo=None) < timedelta(seconds=1) if messages else False
+        scroll = timezone.now().replace(tzinfo=None) + timedelta(hours=5, minutes=30) - messages[-1].datetime.replace(tzinfo=None) < timedelta(seconds=1) if messages else False
+
+        print(timezone.now().replace(tzinfo=None), messages[-1].datetime.replace(tzinfo=None), scroll)
         context = {'messages': messages, 'lead': lead, 'scroll': scroll}
 
         return render(self.request, 'leads/conversation-page.html', context=context)
