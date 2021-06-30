@@ -6,6 +6,7 @@ from django.views import generic
 from .models import Lead, MessageCampaign, Agent, TelegramMessage
 from .functions import mark_contacted, get_leads_to_msg, get_otp, assign_new_session, send_message
 from agents.forms import CategoryModelForm
+from datetime import datetime, timedelta
 
 
 def leads_list(request):
@@ -119,20 +120,22 @@ class ConversationView(generic.View):
         message_pk = kwargs['messagecampaign_id']
         lead = MessageCampaign.objects.get(pk=message_pk)
         
-        messages = TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all()
-        context = {'messages': messages, 'lead': lead}
+        messages = list(TelegramMessage.objects.filter(peer_id=peer_id).filter(tg_session=lead.session_used).all())
+        scroll = datetime.now() - messages[-1].datetime.replace(tzinfo=None) < timedelta(seconds=1) if messages else False
+        context = {'messages': messages, 'lead': lead, 'scroll': scroll}
 
         return render(self.request, 'leads/conversation-page.html', context=context)
 
     def post(self, *args, **kwargs):
-        message = self.request.POST.get("message", None)
+        # message = self.request.POST.get("message", None)
         message_pk = kwargs['messagecampaign_id']
         message_campaign = MessageCampaign.objects.get(pk=message_pk)
         contact = message_campaign.lead.username
         print(f"this is {list(self.request.POST.keys())}")
-        lead_username = list(self.request.POST.keys())[1].split('-')[-1]
-        print(lead_username)
+        
+        
         if self.request.POST.get(f'category-{contact}') is not None:
+            lead_username = list(self.request.POST.keys())[1].split('-')[-1]
         # form = CategoryModelForm(request.POST, prefix=lead_username)
             lead = MessageCampaign.objects.get(lead_id=lead_username)
         # print(lead.category_id)
@@ -143,6 +146,17 @@ class ConversationView(generic.View):
 
         # contact = contacts_model.Contact.objects.filter(telegram_id=kwargs['peer_id']).filter(
         #     user=self.request.user).first()
-        send_message(message_campaign.session_used.session_str3, contact, message)
+        # send_message(message_campaign.session_used.session_str3, contact, message)
         return redirect(
             reverse("conversation", kwargs={"peer_id": kwargs['peer_id'], "messagecampaign_id": kwargs['messagecampaign_id']}))
+
+
+def send_message_ajax(request):
+    if request.method == "POST":
+        message = request.POST.get('message')
+        lead = request.POST.get('lead_id')
+        # message_pk = kwargs['messagecampaign_id']
+        message_campaign = MessageCampaign.objects.get(pk=lead)
+        contact = message_campaign.lead.username
+        send_message(message_campaign.session_used.session_str3, contact, message)
+        return HttpResponse('')

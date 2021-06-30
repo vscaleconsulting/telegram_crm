@@ -29,7 +29,7 @@ def add_leads(request):
                 data = form.cleaned_data
                 target_grp = data['target_group']
                 source_grp = data['source_group']
-                add_all_users(source_grp)
+                add_all_users(source_grp, target_grp)
                 generate_message_campaign(target_grp, source_grp)
             return redirect('/')
         return render(request, 'add-leads.html', {'form': form})

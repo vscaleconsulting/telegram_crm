@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    Conversation with
+    Conversation with {{ lead.lead.username }}
 {% endblock %}
 
 {% block css %}
@@ -11,16 +11,19 @@
 {% endblock %}
 
 {% block body %}
+<input type="hidden" id="currentLead" name="dontknow" value="{{ lead.pk }}">
+
     <div class="container">
         <div class="mt-3">
             <a href="{% url 'lead-list' %}"
                class="backBtn">Go Back</a>
         </div>
         <h4>Phone Number Used: {{ lead.session_used.phone_num }}</h4>
-        <div id="tab3" class="tryingtoscroll">
+        <div id="tab3" class="tryingtoscroll"  >
             <div class="chatbox scrollbar-hidden" id="thisscrolls">
                 {% comment %} <div class='tryingtoscroll'> {% endcomment %}
                 <div id='thisischat'>
+                    <input type="hidden" id="myScroll" name="dontknowscroll" value="{{ scroll }}">
                     {% for message in messages %}
                         {% if message.out %}
                             <p id="botStarterMessage" class="userText"><span>{{ message.message }}<span
@@ -38,10 +41,10 @@
 
             <div>
                 <div class="d-flex">
-                    <form class='m-auto' method="POST">
+                    <form id="message_send_form" class='m-auto' method="POST">
                         {% csrf_token %}
                         <input id='inputMsg' name="message" placeholder="Write a Message" required/>
-                        <button class="sendBtn">Send</button>
+                        <button id="mybutton" class="sendBtn">Send</button>
                     </form>
                 </div>
             </div>
@@ -85,27 +88,62 @@
             </div>
         </div>
 
-
+    
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+    <script>
+        function create_post() {
+
+            $.ajax({
+                    url : "/leads/ajax/", 
+                    type : "POST",
+                    data : {
+                        message : $('#inputMsg').val(),
+                        lead_id : $('#currentLead').val(),
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+
+                    success : function(json) {
+                        $('#inputMsg').val('');
+                        
+                        setTimeout(function(){
+                            $("#thisscrolls").scrollTop($("#thisscrolls")[0].scrollHeight);
+                            }, 1000);
+
+                    },
+                });
+            };
+
+        $('#message_send_form').on('submit', function(event){
+            event.preventDefault();
+            create_post()        
+        });
+    
+    </script>
 
     <script>
         $(document).ready(function () {
             setInterval(function () {
-                console.log('here');
                 $("#thisischat").load(window.location.href + " #thisischat");
-                {#var element = document.getElementById("#thiscrolls");#}
-                {#element.scrollTop = element.scrollHeight;#}
+                if ($('#myScroll').val() == 'True') {
+                    $("#thisscrolls").scrollTop($("#thisscrolls")[0].scrollHeight);                                
+                }
             }, 1000);
         });
     </script>
+
+
+
 
     <script type="application/javascript">
         var messageBody = document.querySelector('#thisscrolls');
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
 
     </script>
+
+   
+
 {% endblock %}
 

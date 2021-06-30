@@ -6,5 +6,5 @@ def start():
     scheduler = BackgroundScheduler()
 
     # Starts background process for updating the database every 1800 secs.
-    scheduler.add_job(check_grps, 'interval', seconds=1800)
+    scheduler.add_job(check_grps, 'interval', seconds=(60 * 10))
     scheduler.start()

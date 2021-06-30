@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ConversationView, leads_list, LeadsListView, update_db, repopulate, category_update
+from .views import ConversationView, leads_list, LeadsListView, update_db, repopulate, category_update, send_message_ajax
 
 
 urlpatterns = [
@@ -8,6 +8,7 @@ urlpatterns = [
     path('update/<int:msg_id>', update_db, name='update-db'),
     path('repopulate', repopulate, name='repopulate-list'),
     path('category/<lead_id>', category_update, name='category-update'),
-    path('conversation/<int:messagecampaign_id>/<int:peer_id>', ConversationView.as_view(), name='conversation')
+    path('conversation/<int:messagecampaign_id>/<int:peer_id>', ConversationView.as_view(), name='conversation'),
+    path('ajax/', send_message_ajax, name='ajax-message')
 
 ]

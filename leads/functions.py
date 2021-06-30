@@ -145,7 +145,7 @@ def update_usage_bot_token(bot_token):
     session.save()
 
 
-def add_all_users(group):
+def add_all_users(source_group, target_group):
     """Adds Leads to the database from a source group
 
     Args:
@@ -159,14 +159,17 @@ def add_all_users(group):
     # client = TelegramClient(StringSession(
     #     '1ApWapzMBuyhm1ynxKkQ4qL58doxHa27-g-aeN80l6kxSLbsPtaD5me6vNwXEXL5oZGBSVBSDap5R0ART95CtPnmVI55mmQGvC9FFyBe4K4YgrFdRLOOmIWRSz3vBXXTgh8XevtEti1COGlTeP600EL257_ni8Ikh7Ns20DoPYchm9rd61zk6HmLwAzHCQ7t0FiyrDPp3TCCkp6lA-VUYZpZ2fORpy_FlR4szTFVfd-XTcROZYtsm_UetS77alp0dQbWHzjTbb1xW0hBPIpE6kPZVHtr9yHK5MDrB2IfCtxw_fhQRAJWEaO3C9ZPRd1KoXjXQJq-9XB2gUzamQ04ddHXtI4fm1z8='),
     #     api_id, api_hash, loop=loop)
-    client = TelegramClient(StringSession(get_session_str()), api_id, api_hash, loop=loop)
+    client = TelegramClient(StringSession('1BJWap1wBu7CgQn99SLVgHbNfSXnxPgPM4XZDPMOFIJDBiGkKEXyIZyB1iZNh0lwpN_Dvv8M9aGiZvjQiFT7haJ8navqWKjmeQE1T6EM7xopRxrewMGGRuX9z201cxEhTgjY29KD6Xdeg-xzR9rto0Z9QQbFP-NWm6G62sk8uNY6P7CL5iW6YctMuSBUPAnV2RUnz0NnrwKMKxJBMhhjZhsWN-BWHw8hqwfUnSFJnuy7xeawWibcTiHZmTi3RDVuU4GFN5zmupAUNbmC0Y-YcbsaTLtHfZDUEG6JTh72dZavmyv2gEJjvYSuj21-1PpgGGnspxlQJIoZm6iU7Dtgz4MTvJYu7cCg='), api_id, api_hash, loop=loop)
     client.connect()
     # print(StringSession.save(client.session))
-    users = client.get_participants(group)
-    admins = client.get_participants(group, filter=ChannelParticipantsAdmins)
+    users = client.get_participants(source_group)
+    present_users = client.get_participants(target_group)
+    users = [user for user in users if user not in present_users]
+    admins = client.get_participants(source_group, filter=ChannelParticipantsAdmins)
     client.disconnect()
 
-    db_leads_list = [u.username for u in Lead.objects.filter(grp_username=group).all()]
+    db_leads_list = [u.username for u in Lead.objects.filter(grp_username=source_group).all()]
+    
     leads = []
     for user in users:
         if user.username in db_leads_list or user.bot or user.status is None or user.username is None:
@@ -177,7 +180,7 @@ def add_all_users(group):
                           telegram_id=user.id,
                           status=str(type(user.status)).split(
                               '.')[-1][10:-2],      
-                          grp_username=group,
+                          grp_username=source_group,
                           admin=0))
 
     Lead.objects.bulk_create(leads, ignore_conflicts=True)
@@ -187,7 +190,7 @@ def add_all_users(group):
         if admin.bot or admin.status is None or admin.username is None:
             continue
         req_admin = Lead.objects.filter(
-            username=admin.username, grp_username=group).first()
+            username=admin.username, grp_username=source_group).first()
         if req_admin is None:
             continue
         req_admin.admin = i
@@ -231,7 +234,6 @@ def get_leads_to_msg(agent_id, target_grp=None, entries=10):
     else:
         not_contacted = MessageCampaign.objects.filter(agent=agent, contacted=False, target_grp=target_grp).all()
 
-    print(not_contacted)
     entries -= len(not_contacted)
     if entries <= 0:
         return not_contacted
@@ -242,7 +244,6 @@ def get_leads_to_msg(agent_id, target_grp=None, entries=10):
         campaigns = MessageCampaign.objects.filter(agent=None, target_grp=target_grp).all()[:entries]
 
     if len(campaigns) < entries and target_grp is not None:
-        print('here')
         generate_message_campaign(target_grp)
         campaigns = MessageCampaign.objects.filter(agent=None, target_grp=target_grp).all()[:entries]
 
@@ -282,13 +283,14 @@ def check_grps():
     
     for grp in grps:
         users = client.get_participants(grp['target_grp'])
-        members[grp['target_grp']] = users
+        # print(users)
+        members[grp['target_grp']] = [user.username for user in users]
     
     client.disconnect()
     
     leads = MessageCampaign.objects.filter(contacted=True)
     for lead in leads:
-        if lead.lead_id in members[lead.target_grp]:
+        if lead.lead.username in members[lead.target_grp]:
             lead.joined = True
             lead.save()
 

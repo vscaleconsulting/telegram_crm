@@ -87,7 +87,7 @@ class TGSession(models.Model):
     last_used_on = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return self.phone_num
+        return f'+{self.phone_num}'
 
     class Meta:
         verbose_name_plural = 'TGSessions'

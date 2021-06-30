@@ -32,17 +32,17 @@ Lead List
 				<thead class="thead">
 					<th scope="col">#</th>
 					<th scope="col">First Name</th>
-					<th scope="col">Agent</th>
+					{% comment %} <th scope="col">Agent</th> {% endcomment %}
 					<th scope="col">Target Group</th>
 					<th scope="col">Handle</th>
-					<th scope="col">Start Contacting</th>
+					<th scope="col">Start Messaging</th>
 				</thead>
 				<tbody>
 					{% for campaign in campaign_not_contacted %}
 					<tr>
 						<th scope="row">{{ forloop.counter }}</th>
 						<td>{{ campaign.lead.first_name }}</td>
-						<td>{{ request.user.username }}</td>
+						{% comment %} <td>{{ request.user.username }}</td> {% endcomment %}
 						<td>{{ campaign.target_grp }}</td>
 						<td><a
 								href="https://telegram.me/{{ campaign.lead.username }}">https://telegram.me/{{ campaign.lead.username }}</a>
@@ -61,7 +61,7 @@ Lead List
 <section class="completed">
 	<div class="container" id='completed'>
 		<h2 class="text-success mb-2">
-			Completed Leads
+			Ongoing Leads
 		</h2>
 		<hr>
 		<div class="table-responsive">
